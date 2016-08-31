@@ -1,5 +1,5 @@
 function InGoogleMaps(mapEle, buscaEle) {
-    // versão: 1
+    // versão: 2
     this.location = new Object();
     this.lat = undefined;
     this.lng = undefined;
@@ -8,14 +8,14 @@ function InGoogleMaps(mapEle, buscaEle) {
     this.buscaEle = undefined;
     this.buscaAutocomplete = undefined;
     this.marker = new Array();
-    this.markerIcon = icon = {
+    this.markerIcon = {
         path: 'M5,11L6.5,6.5H17.5L19,11M17.5,16A1.5,1.5 0 0,1 16,14.5A1.5,1.5 0 0,1 17.5,13A1.5,1.5 0 0,1 19,14.5A1.5,1.5 0 0,1 17.5,16M6.5,16A1.5,1.5 0 0,1 5,14.5A1.5,1.5 0 0,1 6.5,13A1.5,1.5 0 0,1 8,14.5A1.5,1.5 0 0,1 6.5,16M18.92,6C18.72,5.42 18.16,5 17.5,5H6.5C5.84,5 5.28,5.42 5.08,6L3,12V20A1,1 0 0,0 4,21H5A1,1 0 0,0 6,20V19H18V20A1,1 0 0,0 19,21H20A1,1 0 0,0 21,20V12L18.92,6Z',
         fillColor: 'blue',
         fillOpacity: 0.85,
         scale: 1,
         strokeColor: 'black',
         strokeWeight: 1
-    };
+    }
 
     this.place_changed = function () {
         this.map.setCenter({
@@ -49,11 +49,20 @@ function InGoogleMaps(mapEle, buscaEle) {
                 zoom: 3
             });
             (function (_this) {
-                navigator.geolocation.getCurrentPosition(function (i) {
-                    _this.lat = i.coords.latitude;
-                    _this.lng = i.coords.longitude;
-                    _this.place_changed();
-                });
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function (i) {
+                        _this.lat = i.coords.latitude;
+                        _this.lng = i.coords.longitude;
+                        _this.place_changed();
+                    }, function (e) {
+                        console.log("Não foi possível busca a sua localização.");
+                        console.log(e);
+                    }, {
+                        enableHighAccuracy: true,
+                        timeout: 12000,
+                        maximumAge: 0
+                    });
+                }
             })(this);
 
             this.buscaEle = buscaEle;
